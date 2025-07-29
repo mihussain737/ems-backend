@@ -6,6 +6,33 @@ import jakarta.persistence.*;
 @Table(name = "employees")
 public class Employee {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String firstName;
+    private String lastName;
+    @Column(unique = true, nullable = false)
+    private String email;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+    public Employee(Long id, String firstName, String lastName, String email, Department department) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.department = department;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
     public Long getId() {
         return id;
     }
@@ -41,10 +68,7 @@ public class Employee {
         this.email = email;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String firstName;
+
 
     public Employee(Long id, String firstName, String lastName, String email) {
         this.id = id;
@@ -53,7 +77,5 @@ public class Employee {
         this.email = email;
     }
 
-    private String lastName;
-    @Column(unique = true, nullable = false)
-    private String email;
+
 }

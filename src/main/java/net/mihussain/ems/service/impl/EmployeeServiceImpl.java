@@ -2,9 +2,11 @@ package net.mihussain.ems.service.impl;
 
 import lombok.AllArgsConstructor;
 import net.mihussain.ems.dto.EmployeeDto;
+import net.mihussain.ems.entity.Department;
 import net.mihussain.ems.entity.Employee;
 import net.mihussain.ems.exception.ResourceNotFoundException;
 import net.mihussain.ems.mapper.EmployeeMapper;
+import net.mihussain.ems.repository.DepartmentRepository;
 import net.mihussain.ems.repository.EmployeeRepository;
 import net.mihussain.ems.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +20,16 @@ public class EmployeeServiceImpl  implements EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
     @Override
     public EmployeeDto createEmployee(EmployeeDto employeeDto) {
         Employee employee = EmployeeMapper.mapToEmployee(employeeDto);
+        Department department = departmentRepository.findById(employeeDto.getDepartmentId()).orElseThrow(
+                () -> new ResourceNotFoundException("Department Not found with id :" + employeeDto.getDepartmentId())
+        );
+        employee.setDepartment(department);
         Employee savedEmployee = employeeRepository.save(employee);
         return EmployeeMapper.mapToEmployeeDto(savedEmployee);
     }
@@ -48,6 +57,10 @@ public class EmployeeServiceImpl  implements EmployeeService {
         employee.setFirstName(employeeDto.getFirstName());
         employee.setLastName(employeeDto.getLastName());
         employee.setEmail(employeeDto.getEmail());
+        Department department = departmentRepository.findById(employeeDto.getDepartmentId()).orElseThrow(
+                () -> new ResourceNotFoundException("Department Not found with id :" + employeeDto.getDepartmentId())
+        );
+        employee.setDepartment(department);
 
         Employee updatedEmployee = employeeRepository.save(employee);
         return EmployeeMapper.mapToEmployeeDto(updatedEmployee);
